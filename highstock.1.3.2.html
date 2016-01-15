@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Simple Chart</title>
+    <style type="text/css">
+    .container {
+        margin: 10px 100px 100px 100px;
+        padding: 5px 50px;
+        border: 2px #ccc dotted;
+    }
+    .banner {
+        font-family: monospace;
+        text-align: center;
+        font-size: 2em;
+        margin: auto auto;
+        padding: 20px 0px;
+    }
+    #intraContainer,
+    #weekContainer {
+        height: 500px;
+        min-width: 300px;
+        max-width: 2000px;
+        border: 2px #ccc dotted;
+    }
+    #pieContainer,
+    #pieContainer2 {
+        height: 300px;
+        min-width: 300px;
+        max-width: 2000px;
+        border: 2px #ccc dotted;
+    }
+    #pieContainerNoLegend,
+    #heatMApContainer {
+        height: 500px;
+        min-width: 300px;
+        max-width: 2000px;
+        margin: 0 auto;
+        border: 2px #ccc dotted;
+    }
+    #pieContainerBigTooltip {
+        height: 500px;
+        min-width: 300px;
+        max-width: 2000px;
+        border: 2px #ccc dotted;
+    }
+    #candleStickContainer {
+        height: 100px;
+        min-width: 300px;
+        max-width: 2000px;
+        border: 2px #ccc dotted;
+    }
+    #smallAdvanceContainer {
+        min-width: 300px;
+        max-width: 2000px;
+        margin: 0 auto;
+        border: 2px #ccc dotted;
+    }
+    /*PERFORMANCE CHART*/
+    
+    #performanceChartContainer {
+        min-width: 300px;
+        max-width: 2000px;
+        height: 520px;
+    }
+    #performanceChart {
+        height: 450px;
+        width: 100%;
+    }
+    #tooltipsContainer {
+        min-height: 70px;
+        max-height: 140px;
+        display: inline-block;
+        width: 100%;
+        background: GREY;
+    }
+    .tooltipBox {
+        width: 20%;
+        float: left;
+        height: 70px;
+    }
+    .closeTooltip {
+        width: 20%;
+        float: left;
+        height: 100%;
+    }
+    a.boxclose {
+        float: right;
+        /* margin-top: -30px; */
+        /* margin-right: -30px; */
+        
+        cursor: pointer;
+        color: #fff;
+        border: 1px solid #AEAEAE;
+        border-radius: 30px;
+        background: #605F61;
+        font-size: 21px;
+        /* font-weight: bold; */
+        
+        font-family: sans-serif;
+        display: inline-block;
+        line-height: 0px;
+        padding: 11px 3px;
+    }
+    .boxclose:before {
+        content: "X";
+    }
+    .companyDetails {
+        float: left;
+        width: 80%;
+        height: 100%;
+    }
+    .companyName {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+        width: 100%;
+    }
+    .companyValue {
+        width: 100%
+    }
+    .companyPercent {
+        width: 100%
+    }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="banner">USING HIGHSTOCK Ver:1.3.2
+            <br>RESPONSIVE CHARTS (TRY RESIZING BROWSER) </div>
+        IntraDAta Chart
+        <div id="intraContainer"></div>
+
+        WeekDAta Chart
+        <div id="weekContainer"></div>
+
+        Portfolio Pie Map
+        <div id="pieContainer"></div>
+
+        Model Portfolio BIG Pie Chart with no legend
+        <div id="pieContainerNoLegend"></div>
+
+        ASSET ALLOCATION BIG Pie Chart with Big Tooltip
+        <div id="pieContainerBigTooltip"></div>
+
+        ASSET ALLOCATION HEAT MAP
+        <div id="heatMApContainer"></div>
+
+        Small sparkline OHLC
+        <div id="candleStickContainer"></div>
+
+        <br> SMALL ADVANCE CHART / Portfolio Performance chart
+        <br>
+
+        <div id="smallAdvanceContainer">
+            <input type="radio" name="main" class="script" value="SENSEX" checked>SENSEX
+
+            <input type="radio" name="main" class="script" value="NIFTY">NIFTY
+
+            <input type="radio" name="seriesType" class="seriesType" value="value" checked>value
+
+            <input type="radio" name="seriesType" class="seriesType" value="percent">PERCENT
+            <span style="padding: 20px 0px 0px 280px;">Select Company:
+        <select id="drpBaseCompany" >
+            <option value="51">Bajaj Auto Ltd</option>
+            <option value="114">Bajaj Electricals Ltd</option>
+            <option value="231">Coal India Ltd</option>
+            <option value="237">Cipla Ltd</option>
+            <option value="348">DLF Ltd</option>
+            <option value="469">GlaxoSmithkline Healthcare Ltd</option>
+            <option value="476">HCL Technologies Ltd</option>
+            <option value="560">HDFC Bank Ltd</option>
+            <option value="566">Hero MotoCorp Ltd</option>
+            <option value="614">Hindustan Unilever Ltd</option>
+            <option value="1866">ICICI Bank Ltd</option>
+            <option value="2295">Infosys Ltd</option>
+            <option value="2806">Larsen & Toubro Ltd</option>
+            <option value="4987">Ranbaxy Laboratories Ltd</option>           
+        </select>
+        </span>
+
+
+            <input id="btnAddCompare" type="button" value="ADD" />
+            <input id="removeAll" type="button" value="clearAll" onclick="ANGEL_COMPARE_CHART.removeAllExceptFirst()" />
+
+        </div>
+
+        <div id="performanceChartContainer">
+            <div id="performanceChart"></div>
+
+        </div>
+
+    </div>
+
+
+</body>
+<!-- JQUERY -->
+<script language="javascript" src="js/libs/jquery/jquery-1.9.1.min.js"></script>
+
+<!-- HIGHSTOCK LIBRARY -->
+<!-- <script language="javascript" src="js/libs/highcharts/highcharts.src.js"></script> -->
+<!-- <script language="javascript" src="js/libs/highcharts/highstock.2.1.5.js"></script> -->
+<script language="javascript" src="js/libs/highcharts/highstock1.js"></script>
+<!-- <script language="javascript" src="js/libs/highcharts/highstock1.js"></script> -->
+
+<!-- HIGHSTOCK MORE AND HEATMAP/TREEMAP -->
+<!-- <script language="javascript" src="js/libs/highcharts/highcharts-more.src.js"></script> -->
+<!-- <script language="javascript" src="js/libs/highcharts/heatmap.js"></script> -->
+<!-- <script language="javascript" src="js/libs/highcharts/treemap.js"></script> -->
+<!-- <script src="http://code.highcharts.com/modules/heatmap.js"></script>
+<script src="http://code.highcharts.com/modules/treemap.js"></script> -->
+
+
+
+
+<script language="javascript" src="js/data.js"></script>
+<script language="javascript" src="js/angelcharts.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+
+
+    //CALL INTRA LINE CHART
+    AngelChart && AngelChart.drawHighChart('line', {
+        div: 'intraContainer',
+        type: 'intra',
+        data: intradata,
+        chartOptions: {
+            colors: ['#999'],
+            series: [{
+                marker: {
+                    radius: 2,
+                    lineColor: '#000088',
+                    lineWidth: 2,
+                    symbol: 'circle'
+                }
+            }]
+        }
+    });
+
+    //CALL WEEKLY LINE CHART
+    AngelChart && AngelChart.drawHighChart('line', {
+        div: 'weekContainer',
+        type: 'intra',
+        data: weekdata,
+        chartOptions: {
+            colors: ['rgba(33,222,256,0.3)'],
+            xAxis: {
+
+                labels: {
+                    format: '{value:%d %b}',
+                    formatter: function() {
+                        if (typeof list == "undefined") {
+                            WEEKLY_PREV_LABEL = undefined;
+                        }
+
+
+                        thisDate = Highcharts.dateFormat("%d %b", this.value);
+
+                        if (thisDate !== WEEKLY_PREV_LABEL) {
+                            WEEKLY_PREV_LABEL = thisDate;
+                            return thisDate;
+
+                        } else
+                            return;
+                    },
+                    align: 'right',
+                    rotation: -10
+                }
+            },
+            series: [{
+                type: 'area',
+                marker: {
+                    enabled: false,
+                    radius: 2,
+                    lineColor: '#000088',
+                    lineWidth: 2,
+                    symbol: 'circle'
+                },
+                fillColor: {
+                    linearGradient: {
+                        x1: 0,
+                        y1: 0,
+                        x2: 0,
+                        y2: 1
+                    },
+                    stops: [
+                        [0, Highcharts.getOptions().colors[0]],
+                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                },
+            }]
+        }
+    });
+
+
+    //CALL PIE Chart
+    AngelChart.drawHighChart('pie', {
+        div: 'pieContainer',
+        data: [
+            ['Bank Private', 45.0],
+            ['Computers', 26.8],
+            ['Bank Public', 12.8],
+            ['Finance', 8.5],
+            ['Others', 6.9]
+        ],
+        chartOptions: {
+            legend: {
+                enabled: true
+            }
+        }
+    });
+
+
+    //CALL MODEL PORTFOLIO BIG PIE Chart legend Disabled
+    AngelChart.drawHighChart('pie', {
+        div: 'pieContainerNoLegend',
+        data: [
+            ['Automobile', 8.0],
+            ['Construction', 6],
+            ['Bank Public', 9],
+            ['IT', 16],
+            ['Pharma', 6],
+            ['Cement', 5],
+            ['FMCG', 13],
+            ['Media', 9],
+            ['Financial', 5],
+            ['Cap Goods', 17],
+            ['Auto & Auto Ancillary', 6]
+
+        ],
+        chartOptions: {
+            legend: {
+                enabled: false
+            }
+        }
+    });
+
+    //CALL ASSET ALLOCATION Pie Chart with Big Tooltip
+    AngelChart.drawHighChart('pie', {
+        div: 'pieContainerBigTooltip',
+        data: [
+            ['Bank Private', 45.0],
+            ['Computers', 26.8],
+            ['Bank Public', 12.8],
+            ['Finance', 8.5],
+            ['Others', 6.9]
+        ],
+        chartOptions: {
+            legend: {
+                enabled: false
+            },
+            tooltip: {
+                shared: false,
+                useHTML: true,
+                backgroundColor: '#ccc',
+                headerFormat: '<div style="height:55px;width:300px;">',
+
+                pointFormat: '' +
+                    '<div style="height:30%;width:100%">{point.name}</div>' +
+                    '<div style="height: 70%; width: 100%;font-size: 1.5em;">' +
+                    '<div style=" width: 50%;padding: 20px;border-right: 4px dotted grey; float: left;">' +
+                    '<div>Inv.Mkt Value</div>' +
+                    '<div>Rs.4,50,000.</div>' +
+                    '</div>' +
+                    '<div style="width: 20%;padding: 20px;float: left;">{point.y}%</div>' +
+                    '</div>' +
+                    '</div>',
+
+                footerFormat: '</div>',
+                valueDecimals: 2,
+                formatter: null
+            }
+        }
+    });
+
+
+    //CALL SMALL CANDLESTICK Chart
+    AngelChart.drawHighChart('candlestick', {
+        div: 'candleStickContainer',
+        data: [
+            /* May 2006 */
+            [1147651200000, 67.37, 68.38, 67.12, 67.79],
+            [1147737600000, 68.10, 68.25, 64.75, 64.98],
+            [1147824000000, 64.70, 65.70, 64.07, 65.26],
+            [1147910400000, 65.68, 66.26, 63.12, 63.18],
+            [1147996800000, 63.26, 64.88, 62.82, 64.51],
+            [1148256000000, 63.87, 63.99, 62.77, 63.38],
+            [1148342400000, 64.86, 65.19, 63.00, 63.15],
+            [1148428800000, 62.99, 63.65, 61.56, 63.34],
+            [1148515200000, 64.26, 64.45, 63.29, 64.33],
+            [1148601600000, 64.31, 64.56, 63.14, 63.55],
+            [1148947200000, 63.29, 63.30, 61.22, 61.22],
+            [1149033600000, 61.76, 61.79, 58.69, 59.77],
+            /* Jun 2006 */
+            [1149120000000, 59.85, 62.28, 59.52, 62.17],
+            [1149206400000, 62.43, 63.10, 60.88, 61.66],
+            [1149465600000, 61.15, 61.15, 59.97, 60.00],
+            [1149552000000, 60.22, 60.63, 58.91, 59.72],
+            [1149638400000, 60.10, 60.40, 58.35, 58.56],
+            [1149724800000, 58.44, 60.93, 57.15, 60.76],
+            [1149811200000, 61.18, 61.56, 59.10, 59.24]
+        ],
+    });
+
+    //CALL SMALL CANDLESTICK Chart
+
+
+
+});
+
+
+var ANGEL_COMPARE_CHART = ANGEL_COMPARE_CHART || undefined;
+$(document).ready(function() {
+    //CALL INTRA LINE CHART
+    // CREATING A GLOBAL VARIABLE '$$ANGEL_PERFORMACE_COMPARE'
+    ANGEL_COMPARE_CHART = AngelChart && AngelChart.drawHighChart('compareline', {
+        div: 'performanceChart',
+        company: {
+            basePath: '',
+            name: 'SENSEX',
+            shortName: 'SNX',
+            url: './data/20558_BSE.csv',
+            cocode: 100547,
+            color: '#DDD'
+        },
+        addExternalToolTip: true,
+        chartOptions: {
+            chart: {
+                margin: [10]
+            },
+            colors: ['#999'],
+            series: [{
+                name: 'SENSEX',
+                type: 'area',
+                fillColor: {
+                    linearGradient: {
+                        x1: 0,
+                        y1: 0,
+                        x2: 0,
+                        y2: 1
+                    },
+                    stops: [
+                        [0, Highcharts.getOptions().colors[0]],
+                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+                    ]
+                },
+                marker: {
+                    enabled: false,
+                    radius: 2,
+                    lineColor: '#000088',
+                    lineWidth: 2,
+                    symbol: 'circle'
+                }
+            }]
+        }
+    });
+
+
+
+    //REPLACE SENSEX/NIFTY
+    $('.script').change(function() {
+        var value = this.value;
+        if (value == "SENSEX") {
+            var name = "SENSEX",
+                shortName = "snx",
+                cocode = 20558;
+        } else {
+            var name = "NIFTY",
+                shortName = "NFY",
+                cocode = 20559;
+        }
+
+        // // ADDING Company
+        ANGEL_COMPARE_CHART.replaceCompany({
+            chart: {
+                color: 'RED',
+                type: 'line'
+            },
+            company: {
+                name: name,
+                cocode: cocode,
+                shortName: shortName,
+                url: './data/' + cocode + '_BSE.csv'
+            }
+
+        });
+
+    })
+
+    //REPLACE SENSEX/NIFTY
+    $('.seriesType').change(function() {
+        var value = this.value;
+        if (value == "percent") {
+            // // ADDING Company
+            ANGEL_COMPARE_CHART.toggleYAxis('percent');
+
+        } else {
+            ANGEL_COMPARE_CHART.toggleYAxis('none');
+
+        }
+
+
+
+    })
+
+    //ADD OTHER SCRIPTS
+    $('#btnAddCompare').click(function() {
+
+        var e = document.getElementById("drpBaseCompany");
+        COMPNAME = e.options[e.selectedIndex].text;
+        COMPCOCODE = Number(e.options[e.selectedIndex].value);
+
+        // // ADDING Company
+        ANGEL_COMPARE_CHART.addCompany({
+            chart: {
+                color: 'RED',
+                type: 'line'
+            },
+            company: {
+                color: 'RED',
+                name: COMPNAME,
+                cocode: COMPCOCODE,
+                shortName: COMPNAME,
+                url: './data/' + COMPCOCODE + '_BSE.csv'
+            }
+
+        });
+
+    })
+
+
+
+
+});
+</script>
+
+</html>
